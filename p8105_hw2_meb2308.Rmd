@@ -1,13 +1,18 @@
 ---
 title: "P8105 Homework 2 Solutions"
-author: Meghan Bellerose
+author: Meghan Bellerose,
 date: September 21, 2020
 output: github_document
 ---
 
 Homework 2 solutions
 
-# Section 1
+# Problem 1
+
+### Import Mr. Trash Wheel data
 
 
+# Problem 2
 
+
+# Problem 3
