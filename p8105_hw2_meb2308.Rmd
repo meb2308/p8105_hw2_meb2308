@@ -82,7 +82,7 @@ precip_df =
 
 left_join(precip_df, month_df, by = "month")
 ```
-This dataset contains information from the Mr. Trashwheel collector in Baltimore, MD. As trash enters the inner harbor, the trashwheel collects the trasha and stores it in a dumpster. The dataset contains information on year, month, weight of the trash collected, and the number of some specific types of trash, such as plastic bottles. There are `r nrows(trashwheel_df) rows in our final dataset. Additional data sheets include monthly precipitation data.  
+This dataset contains information from the Mr. Trashwheel collector in Baltimore, MD. As trash enters the inner harbor, the trashwheel collects the trasha and stores it in a dumpster. The dataset contains information on year, month, weight of the trash collected, and the number of some specific types of trash, such as plastic bottles. There are `r nrow(trashwheel_df)` rows in our final dataset. Additional data sheets include monthly precipitation data.  
 
 # Problem 2
 
