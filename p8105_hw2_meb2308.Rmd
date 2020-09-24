@@ -7,11 +7,12 @@ output: github_document
 
 This homework uses r version 4.0.2 and r studio version 1.3.1073.
 
+For this homework, I need the tidyverse and readxl libraries. 
+
 ```{r, message = FALSE}
 library(tidyverse)
 library(readxl)
 ```
-
 
 # Problem 1
 
@@ -84,7 +85,44 @@ left_join(precip_df, month_df, by = "month")
 ```
 This dataset contains information from the Mr. Trashwheel collector in Baltimore, MD. As trash enters the inner harbor, the trashwheel collects the trasha and stores it in a dumpster. The dataset contains information on year, month, weight of the trash collected, and the number of some specific types of trash, such as plastic bottles. There are `r nrow(trashwheel_df)` rows in our final dataset. Additional data sheets include monthly precipitation data.  
 
+This code can be used with the 2020 data, because the sheet names are consistent!
+
 # Problem 2
 
+### Read and clean the NYC Transit dataset
+
+I will read and clean the NYC transit dataset, keeping important variables.
+
+```{r}
+options(tibble.print_min = 5)
+
+subway_df =
+  read_csv("./data/subway.csv", 
+    col_types = "cccnnccccccccccccccccclclcccnncc") %>%
+  janitor:: clean_names() %>%
+  select(
+      line, station_name, station_location, route1, route2, route3, route4, route5, route6, route7, route8, route9, route10, route11, vending, entry, entrance_type, ada)
+
+subway_tidy_data = 
+  pivot_longer(
+    subway_df,
+    route1:route11,
+    names_to = "route_order",
+    names_prefix = "route",
+    values_to = "route") %>%
+  drop_na(route)
+
+subway_tidy_data
+
+
+```
+
+I then converted the entry variable from a character to a logical variable.
+
+```{r}
+as.logical(pull(subway_tidy_data, entry))
+```
+
+This dataset contains information about the NYC transit systems' subway stations. I cleaned the dataset so that variable names are in snake format and only retained information on the station names and locations, the routes that are served by each station during weekday service, whether the location allows entry, the entrance type, whether vending machines are available, and whether it is ADA accessible. I tidied the data so that routes 1 through 11 were listed in a single column rather than 11 columns and rows with NA are removed. I then converted entry from a character to a logical vector. There are `r nrow(subway_df)` rows and `r ncol(subway_df)` in the final dataset. I consider the data to be tidy.
 
 # Problem 3
