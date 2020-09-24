@@ -85,7 +85,9 @@ precip_df =
 
 left_join(precip_df, month_df, by = "month")
 ```
-This dataset contains information from the Mr. Trashwheel collector in Baltimore, MD. As trash enters the inner harbor, the trashwheel collects the trasha and stores it in a dumpster. The dataset contains information on year, month, weight of the trash collected, and the number of some specific types of trash, such as plastic bottles. There are `r nrow(trashwheel_df)` rows in our final dataset. Additional data sheets include monthly precipitation data.  
+This dataset contains information from the Mr. Trashwheel collector in Baltimore, MD. As trash enters the inner harbor, the trashwheel collects the trasha and stores it in a dumpster. The dataset contains information on year, month, weight of the trash collected, and the number of some specific types of trash, such as plastic bottles or sports balls. For instance, in 2017, the median number of sports balls inside a dumpster after collection was `r median(pull(trashwheel_df, sports_balls))` balls. There are `r nrow(trashwheel_df)` rows in our final dataset. 
+
+Additional data sheets include monthly precipitation data. In 2017, the mean precipitation was `r round(mean(pull(precip_2017, total)),1)` inches, and in 2018 it was `r round(mean(pull(precip_2018, total)),1)` inches. 
 
 This code can be used with the 2020 data, because the sheet names are consistent!
 
@@ -137,16 +139,26 @@ distinct(subway_tidy_data, station_name)
 filter (subway_tidy_data, ada == TRUE) %>%
   distinct(station_name)
 
-filter (subway_tidy_data, vending == FALSE)
+filter (subway_tidy_data, vending == "NO") %>%
+  filter (entry == "YES")
 
+filter (subway_tidy_data, vending == "NO")
+
+139/447
 
 
 ```
-There are 356 distinct stations, and 73 are ADA compliant. 
+There are 356 distinct stations, and 73 are ADA compliant. Among the 447 stations without vending machines, 139 (0.31%) allow entry.
 
-I will now make route number and name distinct variables. 
+I already made the route number and name distinct variables during my data tidying process. I determine how many stations serve the A train, and among those, how many are ADA compliant below. 
 
-There are X distinct stations that serve the A train. Of these, X are ADA compliant.
+```{r}
+filter (subway_tidy_data, route == "A")
+
+filter (subway_tidy_data, route == "A") %>% 
+  filter(ada == TRUE)
+```
+There are 273 distinct stations that serve the A train. Of these, 107 are ADA compliant.
 
 # Problem 3
 
