@@ -146,7 +146,6 @@ filter (subway_tidy_data, vending == "NO")
 
 139/447
 
-
 ```
 There are 356 distinct stations, and 73 are ADA compliant. Among the 447 stations without vending machines, 139 (0.31%) allow entry.
 
@@ -162,3 +161,31 @@ There are 273 distinct stations that serve the A train. Of these, 107 are ADA co
 
 # Problem 3
 
+### Read and clean FiveThirtyEight data
+
+First I read and clean the data in the pols-month csv file. I break the date variable into day, month, and year then remove day. I will then create a variable for president and remove the base variables used to create it. 
+
+```{r}
+options(tibble.print_min = 3)
+
+pols_df =
+  read_csv("./data/pols-month.csv") %>% 
+  separate(mon, c("year", "month", "day")) %>% 
+  mutate(
+    prez_dem = replace(prez_dem, prez_dem == 1, "dem"),
+    prez_dem = replace(prez_dem, prez_dem == 0, "gop"),
+    president = prez_dem
+  ) %>%
+  select(year, month, president, gov_gop, sen_gop, rep_gop, gov_dem, sen_dem, rep_dem)
+```
+
+I'll repeat this process for the snp csv file and arrange the data file so that year and month are first.
+
+```{r}
+snp_df =
+  read_csv("./data/snp.csv") %>% 
+  separate(date, c("month", "day", "year")) %>% 
+  select (year, month, close)
+```
+
+Now I'll tidy the unemployment 
