@@ -85,7 +85,7 @@ precip_df =
 
 left_join(precip_df, month_df, by = "month")
 ```
-This dataset contains information from the Mr. Trashwheel collector in Baltimore, MD. As trash enters the inner harbor, the trashwheel collects the trasha and stores it in a dumpster. The dataset contains information on year, month, weight of the trash collected, and the number of some specific types of trash, such as plastic bottles or sports balls. For instance, in 2017, the median number of sports balls inside a dumpster after collection was `r median(pull(trashwheel_df, sports_balls))` balls. There are `r nrow(trashwheel_df)` rows in our final dataset. 
+This dataset contains information from the Mr. Trashwheel collector in Baltimore, MD. As trash enters the inner harbor, the trashwheel collects the trash and stores it in a dumpster. The dataset contains information on year, month, weight of the trash collected, and the number of some specific types of trash, such as plastic bottles or sports balls. For instance, in 2017, the median number of sports balls inside a dumpster after collection was `r median(pull(trashwheel_df, sports_balls))` balls. There are `r nrow(trashwheel_df)` rows in our final dataset. 
 
 Additional data sheets include monthly precipitation data. In 2017, the mean precipitation was `r round(mean(pull(precip_2017, total)),1)` inches, and in 2018 it was `r round(mean(pull(precip_2018, total)),1)` inches. 
 
@@ -95,7 +95,7 @@ This code can be used with the 2020 data, because the sheet names are consistent
 
 ### Read and clean the NYC Transit dataset
 
-I will read and clean the NYC transit dataset, keeping important variables. I then converted the entry variable from a character to a logical variable.
+I will read and clean the NYC transit dataset, keeping important variables. I then convert the entry variable from a character to a logical variable.
 
 ```{r}
 options(tibble.print_min = 3)
@@ -109,18 +109,15 @@ subway_df =
     entry = replace(entry, entry == "NO", "FALSE")) %>% 
   mutate(entry = as.logical(entry)) %>% 
   select(
-      line, station_name, station_location, route1, route2, route3, route4, route5, route6, route7, route8, route9, route10, route11, vending, entry, entrance_type, ada)
-
-subway_tidy_data = 
+      line, station_name, station_location, route1:route11, vending, entry, entrance_type, ada) %>%
   pivot_longer(
-    subway_df,
     route1:route11,
     names_to = "route_order",
     names_prefix = "route",
     values_to = "route") %>%
   drop_na(route)
 
-subway_tidy_data
+subway_df
 ```
 This dataset contains information about the NYC transit systems' subway stations. I cleaned the dataset so that variable names are in snake format and only retained information on the station names and locations, the routes that are served by each station during weekday service, whether the location allows entry, the entrance type, whether vending machines are available, and whether it is ADA accessible. I tidied the data so that routes 1 through 11 were listed in a single column rather than 11 columns and rows with NA are removed. I then converted entry from a character to a logical vector. There are `r nrow(subway_df)` rows and `r ncol(subway_df)` columns in the final dataset. I consider the data to be tidy.
 
@@ -128,31 +125,29 @@ This dataset contains information about the NYC transit systems' subway stations
 
 Next, I will find the number of distinct stations, the number of ADA compliant stations, and the proportion of stations without vending machines that allow entrance.
 
-```{r}
-distinct(subway_tidy_data, station_name)
+```{r, echo = FALSE}
+distinct(subway_df, station_name)
 
-filter (subway_tidy_data, ada == TRUE) %>%
+filter (subway_df, ada == TRUE) %>%
   distinct(station_name)
 
-filter (subway_tidy_data, vending == "NO") %>%
+filter (subway_df, vending == "NO") %>%
   filter (entry == "YES")
 
-filter (subway_tidy_data, vending == "NO")
-
-139/447
+filter (subway_df, vending == "NO")
 
 ```
-There are `r count(distinct(subway_tidy_data, station_name))` distinct stations, and 73 are ADA compliant. Among the 447 stations without vending machines, 139 (0.31%) allow entry.
+There are `r count(distinct(subway_df, station_name))` distinct stations, and 73 are ADA compliant. Among the `r count(filter(subway_df, vending == "NO"))` stations without vending machines, `r count(filter(subway_df, vending == "NO", entry == "YES"))` allow entry.
 
-I already made the route number and name distinct variables during my data tidying process. I determine how many stations serve the A train, and among those, how many are ADA compliant below. 
+I already made the route number and name distinct variables during my data tidying process. I determine how many stations serve the A train, and among those, how many are ADA compliant. 
 
 ```{r}
-filter (subway_tidy_data, route == "A")
+filter (subway_df, route == "A")
 
-filter (subway_tidy_data, route == "A") %>% 
+filter (subway_df, route == "A") %>% 
   filter(ada == TRUE)
 ```
-There are 273 distinct stations that serve the A train. Of these, 107 are ADA compliant.
+There are `r count(filter(subway_df, route == "A"))` distinct stations that serve the A train. Of these, `r count(filter(subway_df, route == "A", ada == TRUE))` are ADA compliant.
 
 # Problem 3
 
@@ -172,15 +167,8 @@ pols_df =
     president = prez_dem
   ) %>%
   mutate(
-    month = replace(month, month == "01", "1"),
-    month = replace(month, month == "02", "2"),
-    month = replace(month, month == "03", "3"),
-    month = replace(month, month == "04", "4"),
-    month = replace(month, month == "05", "5"),
-    month = replace(month, month == "06", "6"),
-    month = replace(month, month == "07", "7"),
-    month = replace(month, month == "08", "8"),
-    month = replace(month, month == "09", "9")
+    year = as.integer(year),
+    month = as.integer(month) 
   ) %>% 
   select(year, month, president, gov_gop, sen_gop, rep_gop, gov_dem, sen_dem, rep_dem)
 ```
@@ -191,6 +179,10 @@ I'll repeat this process for the snp csv file and arrange the data file so that 
 snp_df =
   read_csv("./data/snp.csv") %>% 
   separate(date, c("month", "day", "year")) %>% 
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month) 
+  ) %>% 
   select (year, month, close)
 ```
 
@@ -226,5 +218,5 @@ pols_snp_unemp =
   left_join(pols_df, snp_df, unemployment_month_data, by = c("year", "month"))
 ```
 
-This dataset was generated using data from three datasets created by the FiveThirtyEight project. The pols dataset contains information on the number of republican (GOP) and democratic political leaders at different dates and whether the president was a democrat or republican. The unemployment dataset provides the percentage of people who were unemployed in the U.S. during each month. The snp dataset contains the closing values of the S&P stock index on various dates. The final dataset has `r nrow(pols_snp_unemp)` rows and `r ncol(pols_snp_unemp)` columns, and has a range of (`r range(pull(pols_snp_unemp, year))`) years. The key variable names are: `r names(pols_snp_unemp)`. 
+This dataset was generated using data from three datasets created by the FiveThirtyEight project. The pols dataset contains information on the number of republican (GOP) and democratic political leaders at different dates and whether the president was a Democrat or Republican. The unemployment dataset provides the percentage of people who were unemployed in the U.S. during each month. The snp dataset contains the closing values of the S&P stock index on various dates. The final dataset has `r nrow(pols_snp_unemp)` rows and `r ncol(pols_snp_unemp)` columns, and has a range of (`r range(pull(pols_snp_unemp, year))`) years. The key variable names are: `r names(pols_snp_unemp)`. 
 
