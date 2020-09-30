@@ -125,7 +125,7 @@ This dataset contains information about the NYC transit systems' subway stations
 
 Next, I will find the number of distinct stations, the number of ADA compliant stations, and the proportion of stations without vending machines that allow entrance.
 
-```{r, echo = FALSE}
+```{r, message = FALSE}
 distinct(subway_df, station_name) %>%
   count()
 
