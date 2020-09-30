@@ -126,28 +126,37 @@ This dataset contains information about the NYC transit systems' subway stations
 Next, I will find the number of distinct stations, the number of ADA compliant stations, and the proportion of stations without vending machines that allow entrance.
 
 ```{r, echo = FALSE}
-distinct(subway_df, station_name)
+distinct(subway_df, station_name) %>%
+  count()
 
-filter (subway_df, ada == TRUE) %>%
-  distinct(station_name)
+filter (subway_df, ada == "TRUE") %>%
+  distinct(station_name) %>% 
+  count ()
 
 filter (subway_df, vending == "NO") %>%
-  filter (entry == "YES")
+  count () 
+  
+filter (subway_df, vending == "NO", entry == "TRUE") %>%
+  count()
 
-filter (subway_df, vending == "NO")
+filter (subway_df, vending == "NO", entry == "TRUE") %>%
+  count() / filter (subway_df, vending == "NO") %>%
+  count () 
 
 ```
-There are `r count(distinct(subway_df, station_name))` distinct stations, and 73 are ADA compliant. Among the `r count(filter(subway_df, vending == "NO"))` stations without vending machines, `r count(filter(subway_df, vending == "NO", entry == "YES"))` allow entry.
+There are `r count(distinct(subway_df, station_name))` distinct stations, and 73 are ADA compliant. Among the `r count(filter(subway_df, vending == "NO"))` stations without vending machines, `r count(filter(subway_df, vending == "NO", entry == "TRUE"))` allow entry, giving a proportion of 31.1%.
 
 I already made the route number and name distinct variables during my data tidying process. I determine how many stations serve the A train, and among those, how many are ADA compliant. 
 
 ```{r}
-filter (subway_df, route == "A")
+filter (subway_df, route == "A") %>%
+  count()
 
-filter (subway_df, route == "A") %>% 
-  filter(ada == TRUE)
+filter (subway_df, route == "A", ada == "TRUE") %>% 
+  count()
 ```
 There are `r count(filter(subway_df, route == "A"))` distinct stations that serve the A train. Of these, `r count(filter(subway_df, route == "A", ada == TRUE))` are ADA compliant.
+
 
 # Problem 3
 
